@@ -1,12 +1,19 @@
 <template>
     <div>
         <h1>Todo List</h1>
-        <input type="text" 
-        v-model="newTodo" placeholder="Add a new task" 
-        @keyup.enter="addTodo"/>
-        <button @click="addTodo">Add</button>
+        <div>
+            <input type="text" 
+            v-model="newTodo" placeholder="Add a new task" 
+            @keyup.enter="addTodo"/>
+            <button @click="addTodo">Add</button>
+    </div>
+    <div>
+        <button @click="filter='completed'">Completed</button>
+        <button @click="filter='not_completed'">Not Completed</button>
+        <button @click="filter='all'">All</button>
+    </div>
         <ul>
-            <li v-for="(todo, index) in todos" :key="index">
+            <li v-for="(todo, index) in filterTodo" :key="index">
                 <span :class="{ completed:todo.completed }" @click="toggle(index)">{{ todo.text }}</span>
                 <button @click="removeTodo(index)">Remove</button>
             </li>
@@ -15,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue' 
+import { ref , computed } from 'vue' 
 interface Todo {
     text: string
     completed: boolean
@@ -50,6 +57,20 @@ const todos = ref<Todo[]>([
         completed: false
     },
 ])
+const filterTodo = computed(function() {
+    if (filter.value === 'completed'){
+        return todos.value.filter(function(item){
+            return item.completed === true
+        })
+    }if (filter.value === 'not_completed'){
+        return todos.value.filter(function(item){
+            return item.completed === false
+        })
+    }else{
+        return todos.value
+    }
+})
+const filter = ref<string>('all') // 'all', 'Completed', 'not completed'
 const newTodo = ref<string>('')
 </script>
 
